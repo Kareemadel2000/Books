@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Books.Models.Book>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2 class="text-primary">Books</h2>
+
+<hr />
+<a href="@Url.Action("Create")" class="btn btn-primary">
+    <i class="icofont-plus"></i>
+    Add New
+</a>
+<br />
+<br />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">
+        No Books Added yet.....!!
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Discraption</th>
+                <th>AddedOn</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.Author</td>
+                    <td>@book.Category.Name</td>
+                    <td>@book.Discraption</td>
+                    <td>@book.AddedOn</td>
+                    <td>
+                        <a href="@Url.Action("Edit" ,"Books" ,new {id = book.Id })" class="btn btn-primary">
+                            <i class="icofont-edit-alt"></i>
+                            Edit
+                        </a>
+                        <a href="javascript:;" class="btn btn-danger">
+                            <i class="icofont-ui-close"></i>
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
