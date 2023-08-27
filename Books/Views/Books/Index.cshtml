@@ -6,12 +6,10 @@
 <h2 class="text-primary">Books</h2>
 
 <hr />
-<a href="@Url.Action("Create")" class="btn btn-primary">
+<a href="@Url.Action("Create")" class="btn btn-primary my-3">
     <i class="icofont-plus"></i>
     Add New
 </a>
-<br />
-<br />
 
 @if (!Model.Any())
 {
@@ -36,7 +34,7 @@ else
             @foreach (var book in Model)
             {
                 <tr>
-                    <td>@book.Title</td>
+                    <td>@Html.ActionLink</td>
                     <td>@book.Author</td>
                     <td>@book.Category.Name</td>
                     <td>@book.Discraption</td>
