@@ -11,6 +11,8 @@
     Add New
 </a>
 
+<span id="Massage" class="d-none">@TempData["Massage"]</span>
+
 @if (!Model.Any())
 {
     <div class="alert alert-warning">
@@ -34,14 +36,14 @@ else
             @foreach (var book in Model)
             {
                 <tr>
-                    <td>@Html.ActionLink</td>
+                    <td>@Html.ActionLink(book.Title,"Detalis","Books",new { id = book.Id},null)</td>
                     <td>@book.Author</td>
                     <td>@book.Category.Name</td>
                     <td>@book.Discraption</td>
                     <td>@book.AddedOn</td>
                     <td>
                         <a href="@Url.Action("Edit" ,"Books" ,new {id = book.Id })" class="btn btn-primary">
-                            <i class="icofont-edit-alt"></i>
+                            <i class="icofont-ui-edit"></i>
                             Edit
                         </a>
                         <a href="javascript:;" class="btn btn-danger">
@@ -53,4 +55,16 @@ else
             }
         </tbody>
     </table>
+}
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            var massage = $('#Massage').text();
+            if (massage !== '') {
+                toastr.success(massage);
+            }
+        });
+    </script>
 }

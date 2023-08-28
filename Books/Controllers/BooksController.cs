@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.Net;
 
 namespace Books.Controllers
 {
@@ -21,8 +22,18 @@ namespace Books.Controllers
         // GET: Books
         public ActionResult Index()
         {
-            var books = _dbcontext.Books.Include(m=>m.Category).ToList();
+            var books = _dbcontext.Books.Include(m => m.Category).ToList();
             return View(books);
+        }
+
+        public ActionResult Detalis(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var book = _dbcontext.Books.Include(c => c.Category).SingleOrDefault(b => b.Id == id);
+            if (book == null)
+                return HttpNotFound();
+            return View(book);
         }
 
         public ActionResult Create()
@@ -31,8 +42,28 @@ namespace Books.Controllers
             {
                 Categories = _dbcontext.Categories.Where(m => m.IsActive).ToList()
             };
-            return View(viewModel);
+            return View("BookForm",viewModel);
         }
+
+        public ActionResult Edit(int? id )
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var book = _dbcontext.Books.Find(id);
+            if (book == null)
+                return HttpNotFound();
+            var viewModel = new BookFormViewModel 
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Discraption=book.Discraption,
+                Author =book.Author,
+                CategoryId= book.CategoryId,
+                Categories = _dbcontext.Categories.Where(m => m.IsActive).ToList()
+            };
+            return View("BookForm", viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Save(BookFormViewModel model)
@@ -40,18 +71,34 @@ namespace Books.Controllers
             if (!ModelState.IsValid)
             {
                 model.Categories = _dbcontext.Categories.Where(m => m.IsActive).ToList();
-                return View("Create" ,model);
+                return View("BookForm", model);
             }
-            var book = new Book
+
+            if (model.Id == 0)
             {
-                Title =model.Title,
-                Author =model.Author,
-                CategoryId =model.CategoryId,
-                Discraption =model.Discraption
-            };
-            _dbcontext.Books.Add(book);
+                var book = new Book
+                {
+                    Title = model.Title,
+                    Author = model.Author,
+                    CategoryId = model.CategoryId,
+                    Discraption = model.Discraption
+                };
+                _dbcontext.Books.Add(book);
+            }
+            else
+            {
+                var book = _dbcontext.Books.Find(model.Id);
+                if (book == null)
+                    return HttpNotFound();
+
+                book.Title = model.Title;
+                book.Author = model.Author;
+                book.CategoryId = model.CategoryId;
+                book.Discraption = model.Discraption;
+            }
             _dbcontext.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            TempData["Massage"] = "Saved Successfully";
+            return RedirectToAction("Index");
         }
     }
 }
